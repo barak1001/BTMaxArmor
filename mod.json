@@ -1,0 +1,20 @@
+{
+	"Name": "BTMaxArmor",
+	"DLL": "BTMaxArmor.dll",
+	"DLLEntryPoint": "BTMaxArmor.Mod.Init",
+	"Enabled": true,
+	"Hidden": true,
+	"Version": "1.9.0",
+	"DependsOn": ["MechEngineer"],
+    "Settings": {
+        "HeadPoints": 45,
+        "CenterTorsoFrontToBack": 0.73,
+        "LeftTorsoFrontToBack": 0.69,
+        "RightTorsoFrontToBack": 0.69,
+        "RatioCenterTorso": 0.20,
+        "RatioLeftTorso": 0.1455,
+        "RatioRightTorso": 0.1455,
+        "RatioLeftArm": 0.1455,
+        "RatioLeftArm": 0.1455
+    }
+}
