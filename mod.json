@@ -7,14 +7,9 @@
 	"Version": "1.9.0",
 	"DependsOn": ["MechEngineer"],
     "Settings": {
-        "HeadPoints": 45,
-        "CenterTorsoFrontToBack": 0.73,
-        "LeftTorsoFrontToBack": 0.69,
-        "RightTorsoFrontToBack": 0.69,
-        "RatioCenterTorso": 0.20,
-        "RatioLeftTorso": 0.1455,
-        "RatioRightTorso": 0.1455,
-        "RatioLeftArm": 0.1455,
-        "RatioLeftArm": 0.1455
+        "HeadPointsUnchanged": true,
+        "CenterTorsoRatio": 0.73,
+        "LeftTorsoRatio": 0.69,
+        "RightTorsoRatio": 0.69,
     }
 }
