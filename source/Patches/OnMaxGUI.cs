@@ -11,18 +11,14 @@ namespace BTMaxArmor.Patches
     {
         static bool Prefix(MechLabPanel __instance, MechLabMechInfoWidget ___mechInfoWidget, MechLabItemSlotElement ___dragItem)
         {
+            var logger = HBS.Logging.Logger.GetLogger("Sysinfo");
             var hk = Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl);
+            ArmorState state = new(__instance.activeMechDef);
             if (hk)
             {
-                if (ArmorUtils.CanMaxArmor(__instance.activeMechDef))
+                if (state.CanMaxArmor)
                 {
                     AdjustArmor.MaxArmor(__instance.activeMechDef);
-                    //               __instance.headWidget.StripArmor();
-                    //               __instance.centerTorsoWidget.StripArmor();
-                    //               __instance.leftTorsoWidget.StripArmor();
-                    //               __instance.rightTorsoWidget.StripArmor();
-                    //               __instance.leftArmWidget.StripArmor();
-                    //               __instance.rightArmWidget.StripArmor();
                     ___mechInfoWidget.RefreshInfo(false);
                     __instance.FlagAsModified();
                     __instance.ValidateLoadout(false);
