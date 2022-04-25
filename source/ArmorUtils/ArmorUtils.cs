@@ -81,7 +81,15 @@ namespace BTMaxArmor
         }
         public static float ArmorMultiplier(this MechDef mechDef)
         {
-            float multiplier = mechDef.AvailableAP() / mechDef.MaxArmorPoints();
+            float headPoints = mechDef.Head.AssignedArmor;
+            float availablePoints = mechDef.AvailableAP();
+            float maxArmor = mechDef.MaxArmorPoints();
+            if(Mod.Settings.HeadPointsUnChanged)
+            {
+                maxArmor -= headPoints;
+                availablePoints -= headPoints;
+            }
+            float multiplier = availablePoints / maxArmor;
             return multiplier;
         }
         public static float CalcMaxAPbyLocation(this MechDef mechDef, LocationLoadoutDef location, LocationDef locationDef)
@@ -98,7 +106,7 @@ namespace BTMaxArmor
             float maxAP = locationDef.InternalStructure * 2;
             float availableAP = mechDef.CalcMaxAPbyLocation(location, locationDef);
             availableAP *= mechDef.ArmorMultiplier();
-            availableAP = Mathf.Ceil(availableAP);
+            availableAP = Mathf.Floor(availableAP);
 
             if (location == mechDef.Head)
             {
@@ -119,28 +127,6 @@ namespace BTMaxArmor
             return availableAP;
         }
 
-        public static float AssignArmorLeg(this MechDef mechDef,LocationLoadoutDef location)
-        {
-            float available = mechDef.AvailableAP();
-            float armor = mechDef.AssignAPbyLocation(mechDef.Head, mechDef.Chassis.Head);
-            armor += mechDef.AssignAPbyLocation(mechDef.CenterTorso, mechDef.Chassis.CenterTorso);
-            armor += mechDef.AssignAPbyLocation(mechDef.LeftTorso, mechDef.Chassis.LeftTorso);
-            armor += mechDef.AssignAPbyLocation(mechDef.RightTorso, mechDef.Chassis.RightTorso);
-            armor += mechDef.AssignAPbyLocation(mechDef.LeftArm, mechDef.Chassis.LeftArm);
-            armor += mechDef.AssignAPbyLocation(mechDef.RightArm, mechDef.Chassis.RightArm);
-            float legArmor = Mathf.Floor((available - armor)/2);
-            float maxArmor = mechDef.Chassis.LeftLeg.InternalStructure * 2;
-            if(location == mechDef.RightLeg)
-            {
-                legArmor = Mathf.Ceil((available - armor) / 2);
-                maxArmor = mechDef.Chassis.RightLeg.InternalStructure * 2;
-            }
-            if(legArmor > maxArmor)
-            {
-                legArmor = maxArmor;
-            }
-            return legArmor;
-        }
         public static float CurrentArmorPoints(this MechDef mechDef)
         {
             float currentArmorPoints = mechDef.MechDefAssignedArmor;
@@ -149,7 +135,7 @@ namespace BTMaxArmor
         }
         public static bool CanMaxArmor(this MechDef mechDef)
         {
-            float buffer = 12f;
+            float buffer = 15.0f;
             float adjustedTPP = mechDef.TonPerPoint();
             float headArmor = mechDef.Head.AssignedArmor;
             float minFree = (headArmor + buffer) * adjustedTPP;
@@ -202,9 +188,9 @@ namespace BTMaxArmor
             RA_MaxAP = mechDef.CalcMaxAPbyLocation(mechDef.RightArm, mechDef.Chassis.RightArm);
             RA_AssignedAP = mechDef.AssignAPbyLocation(mechDef.RightArm, mechDef.Chassis.RightArm);
             LL_MaxAP = mechDef.CalcMaxAPbyLocation(mechDef.LeftLeg, mechDef.Chassis.LeftLeg);
-            LL_AssignedAP = mechDef.AssignArmorLeg(mechDef.LeftLeg);
+            LL_AssignedAP = mechDef.AssignAPbyLocation(mechDef.LeftLeg, mechDef.Chassis.LeftLeg);
             RL_MaxAP = mechDef.CalcMaxAPbyLocation(mechDef.RightLeg, mechDef.Chassis.RightLeg);
-            RL_AssignedAP = mechDef.AssignArmorLeg(mechDef.RightLeg);
+            RL_AssignedAP = mechDef.AssignAPbyLocation(mechDef.RightLeg, mechDef.Chassis.RightLeg);
         }
     }
 }
