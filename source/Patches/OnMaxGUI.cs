@@ -226,6 +226,17 @@ namespace BTMaxArmor.Patches
                     }
                 }
                 assignedPoints = h_AssignedAP + ct_AssignedAP + lt_AssignedAP + rt_AssignedAP +la_AssignedAP + ra_AssignedAP + ll_AssignedAP + rl_AssignedAP;
+                __instance.headWidget.SetArmor(false, h_AssignedAP, true);
+                __instance.centerTorsoWidget.SetArmor(false, ct_Front, true);
+                __instance.centerTorsoWidget.SetArmor(true, ct_Rear, true);
+                __instance.leftTorsoWidget.SetArmor(false, lt_Front, true);
+                __instance.leftTorsoWidget.SetArmor(true, lt_Rear, true);
+                __instance.rightTorsoWidget.SetArmor(false, rt_Front, true);
+                __instance.rightTorsoWidget.SetArmor(true, rt_Rear, true);
+                __instance.leftArmWidget.SetArmor(false, la_AssignedAP, true);
+                __instance.rightArmWidget.SetArmor(false, ra_AssignedAP, true);
+                __instance.leftLegWidget.SetArmor(false, ll_AssignedAP, true);
+                __instance.rightLegWidget.SetArmor(false, rl_AssignedAP, true);
                 logger.Log("availableAP: " + availableArmor);
                 logger.Log("assignedAP: " + assignedPoints);
                 logger.Log("ct_assignedAP: " + ct_AssignedAP);
