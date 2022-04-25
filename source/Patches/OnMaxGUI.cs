@@ -225,7 +225,7 @@ namespace BTMaxArmor.Patches
                         rt_Rear++;
                     }
                 }
-                assignedPoints = h_AssignedAP + ct_AssignedAP + lt_AssignedAP + rt_AssignedAP + rt_AssignedAP + ra_AssignedAP + ll_AssignedAP + rl_AssignedAP;
+                assignedPoints = h_AssignedAP + ct_AssignedAP + lt_AssignedAP + rt_AssignedAP +la_AssignedAP + ra_AssignedAP + ll_AssignedAP + rl_AssignedAP;
                 logger.Log("availableAP: " + availableArmor);
                 logger.Log("assignedAP: " + assignedPoints);
                 logger.Log("ct_assignedAP: " + ct_AssignedAP);
