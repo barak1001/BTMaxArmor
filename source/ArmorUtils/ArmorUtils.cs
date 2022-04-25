@@ -9,6 +9,7 @@ namespace BTMaxArmor
 {
     public static class ArmorUtils
     {
+        //Calculates the ArmorFactor depending on what items are equipped on the Mech.
         public static float CalculateArmorFactor(this MechDef mechDef)
         {
             if (mechDef?.Inventory == null)
@@ -23,12 +24,14 @@ namespace BTMaxArmor
             armorFactor++;
             return armorFactor;
         }
+        //Calculates the free weight available on the Mech.  This depends on MechEngineer having StoredTonnage as a class.
         public static float CalcFreeTonnage(this MechDef mechDef)
         {
             float currentTotalTonnage = StoredTonnage.UnRoundedTonnage;
             float freeTonnage = mechDef.Chassis.Tonnage - currentTotalTonnage;
             return freeTonnage;
         }
+        //Takes TONNAGE_PER_ARMOR_POINT and multiplies it by the ArmorFactor provided by equipped items.
         public static float TonPerPoint(this MechDef mechDef)
         {
             float tonPerPoint = UnityGameInstance.BattleTechGame.MechStatisticsConstants.TONNAGE_PER_ARMOR_POINT;
@@ -36,6 +39,7 @@ namespace BTMaxArmor
             float adjustedTonPerPoint = tonPerPoint * armorFactor;
             return adjustedTonPerPoint;
         }
+        //The weight of the armor that is currently equipped on the Mech.
         public static float CalcArmorWeight(this MechDef mechDef)
         {
             float armorPoints = mechDef.MechDefAssignedArmor;
@@ -43,6 +47,7 @@ namespace BTMaxArmor
             float armorWeight = armorPoints * tonPerPoint;
             return armorWeight;
         }
+        //Armor weight + free tonnage.  This is the amount of possible armor in tons that can be assigned.
         public static float UsableWeight(this MechDef mechDef)
         {
             float weight = CalcArmorWeight(mechDef);
@@ -53,10 +58,15 @@ namespace BTMaxArmor
             }
             return weight;
         }
-
+        //Max total armor points that the Mech can have based on CBT rules as per MechEngineer.
         public static float MaxArmorPoints(this MechDef mechDef)
         {
-            float headValue = mechDef.Chassis.Head.MaxArmor;
+            float headValue = mechDef.Chassis.Head.InternalStructure*3;
+            float headMax = mechDef.Chassis.Head.MaxArmor;
+            if (headValue > headMax)
+            {
+                headValue = headMax;
+            }
             float maxPoints = headValue +
                               mechDef.Chassis.CenterTorso.InternalStructure * 2 +
                               mechDef.Chassis.LeftTorso.InternalStructure * 2 +
@@ -67,6 +77,7 @@ namespace BTMaxArmor
                               mechDef.Chassis.RightLeg.InternalStructure * 2;
             return maxPoints;
         }
+        //Calculates available armor points based usable weight.
         public static float AvailableAP(this MechDef mechDef)
         {
             float maxAP = mechDef.MaxArmorPoints();
@@ -79,6 +90,7 @@ namespace BTMaxArmor
             }
             return availableAP;
         }
+        //Percentage equal to available armor points divided by max armor points.
         public static float ArmorMultiplier(this MechDef mechDef)
         {
             float headPoints = mechDef.Head.AssignedArmor;
@@ -92,12 +104,18 @@ namespace BTMaxArmor
             float multiplier = availablePoints / maxArmor;
             return multiplier;
         }
+        //Max AP by location
         public static float CalcMaxAPbyLocation(this MechDef mechDef, LocationLoadoutDef location, LocationDef locationDef)
         {
             float maxAP = locationDef.InternalStructure * 2;
             if (location == mechDef.Head)
             {
-                maxAP = mechDef.Chassis.Head.MaxArmor;
+                maxAP = locationDef.InternalStructure * 3;
+                float maxArmor = mechDef.Chassis.Head.MaxArmor;
+                if(maxArmor < maxAP)
+                {
+                    maxAP = maxArmor;
+                }
             }
             return maxAP;
         }

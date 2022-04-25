@@ -1,7 +1,6 @@
 ﻿using BattleTech.UI;
 using Harmony;
 using UnityEngine;
-using System;
 
 namespace BTMaxArmor.Patches
 {
@@ -11,14 +10,16 @@ namespace BTMaxArmor.Patches
     {
         static bool Prefix(MechLabPanel __instance, MechLabMechInfoWidget ___mechInfoWidget, MechLabItemSlotElement ___dragItem)
         {
-            var logger = HBS.Logging.Logger.GetLogger("Sysinfo");
-            bool inputChanged = false;
+//            var logger = HBS.Logging.Logger.GetLogger("Sysinfo");
+            //Store the Mods.Settings.Unchanged value.
+            bool originalSetting = Mod.Settings.HeadPointsUnChanged;
             var hk = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
+            //If Shift is held while click the button it will flip the setting for HeadPointsUnchanged
             if (hk)
             {
                 Mod.Settings.HeadPointsUnChanged = !Mod.Settings.HeadPointsUnChanged;
-                inputChanged = true;
             }
+            //Sets all the variables for the mech at the time the button is clicked
             ArmorState state = new(__instance.activeMechDef);
             if (!__instance.Initialized)
             {
@@ -32,9 +33,9 @@ namespace BTMaxArmor.Patches
             {
                 return false;
             }
+            //Will only maximize if enough free tonnage + assigned armor is available.
             if (state.CanMaxArmor)
             {
-                float maxArmorPoints = state.MaxArmorPoints;
                 float availableArmor = state.AvailableArmorPoints;
                 float h_MaxAP = state.H_MaxAP;
                 float ct_MaxAP = state.CT_MaxAP;
@@ -54,6 +55,7 @@ namespace BTMaxArmor.Patches
                 float rl_AssignedAP = state.RL_AssignedAP;
                 float assignedPoints = h_AssignedAP + ct_AssignedAP + lt_AssignedAP + rt_AssignedAP + la_AssignedAP + ra_AssignedAP + ll_AssignedAP + rl_AssignedAP;
                 float remainingPoints = availableArmor - assignedPoints;
+                //If there are leftover points due to rounding down, distribute them.
                 if (assignedPoints < availableArmor)
                 {
                     bool pass = false;
@@ -75,7 +77,7 @@ namespace BTMaxArmor.Patches
                             {
                                 if (h_points > 0)
                                 {
-                                    logger.Log("Added Head");
+//                                    logger.Log("Added Head");
                                     h_AssignedAP++;
                                     torsoPoints--;
                                     remainingPoints--;
@@ -87,7 +89,7 @@ namespace BTMaxArmor.Patches
                             }
                             if (ct_points > 0)
                             {
-                                logger.Log("Added CenterTorso");
+//                                logger.Log("Added CenterTorso");
                                 ct_AssignedAP++;
                                 torsoPoints--;
                                 remainingPoints--;
@@ -98,7 +100,7 @@ namespace BTMaxArmor.Patches
                             }
                             if (lt_points > 0)
                             {
-                                logger.Log("Added LeftTorso");
+//                                logger.Log("Added LeftTorso");
                                 lt_AssignedAP++;
                                 torsoPoints--;
                                 remainingPoints--;
@@ -109,7 +111,7 @@ namespace BTMaxArmor.Patches
                             }
                             if (rt_points > 0)
                             {
-                                logger.Log("Added RightTorso");
+//                                logger.Log("Added RightTorso");
                                 rt_AssignedAP++;
                                 torsoPoints--;
                                 remainingPoints--;
@@ -121,7 +123,7 @@ namespace BTMaxArmor.Patches
                         }
                         if (torsoPoints <= 0 && extremityPoints <= 0 && Mod.Settings.HeadPointsUnChanged)
                         {
-                            logger.Log("Added Head");
+//                            logger.Log("Added Head");
                             h_AssignedAP++;
                             remainingPoints--;
                             if (remainingPoints <= 0)
@@ -135,7 +137,7 @@ namespace BTMaxArmor.Patches
                             {
                                 if (la_points > 0)
                                 {
-                                    logger.Log("Added LeftArm");
+//                                    logger.Log("Added LeftArm");
                                     ll_AssignedAP++;
                                     extremityPoints--;
                                     remainingPoints--;
@@ -150,7 +152,7 @@ namespace BTMaxArmor.Patches
                             {
                                 if (ra_points > 0)
                                 {
-                                    logger.Log("Added RightArm");
+//                                    logger.Log("Added RightArm");
                                     ra_AssignedAP++;
                                     extremityPoints--;
                                     remainingPoints--;
@@ -165,7 +167,7 @@ namespace BTMaxArmor.Patches
                             {
                                 if (ll_points > 0)
                                 {
-                                    logger.Log("Added LeftLeg");
+//                                    logger.Log("Added LeftLeg");
                                     ll_AssignedAP++;
                                     extremityPoints--;
                                     remainingPoints--;
@@ -180,7 +182,7 @@ namespace BTMaxArmor.Patches
                             {
                                 if (rl_points > 0)
                                 {
-                                    logger.Log("Added RightLeg");
+//                                    logger.Log("Added RightLeg");
                                     rl_AssignedAP++;
                                     extremityPoints--;
                                     remainingPoints--;
@@ -195,12 +197,14 @@ namespace BTMaxArmor.Patches
                         pass = !pass;
                     }
                 }
+                //Set the armor points variables for the front and rear torso positions based on the settings in the json.
                 float ct_Front = Mathf.Ceil(ct_AssignedAP * Mod.Settings.CenterTorsoRatio);
                 float ct_Rear = ct_AssignedAP - ct_Front;
                 float lt_Front = Mathf.Ceil(lt_AssignedAP * Mod.Settings.LeftTorsoRatio);
                 float lt_Rear = lt_AssignedAP - lt_Front;
                 float rt_Front = Mathf.Ceil(rt_AssignedAP * Mod.Settings.RightTorsoRatio);
                 float rt_Rear = rt_AssignedAP - rt_Front;
+                //If rear armor is 0 add one point to it, but only if the front has 2 points or more available.
                 if (ct_Rear == 0)
                 {
                     if (ct_Front > 1)
@@ -225,7 +229,8 @@ namespace BTMaxArmor.Patches
                         rt_Rear++;
                     }
                 }
-                assignedPoints = h_AssignedAP + ct_AssignedAP + lt_AssignedAP + rt_AssignedAP +la_AssignedAP + ra_AssignedAP + ll_AssignedAP + rl_AssignedAP;
+                //Set the armor points based on the defined variables.
+//                assignedPoints = h_AssignedAP + ct_AssignedAP + lt_AssignedAP + rt_AssignedAP +la_AssignedAP + ra_AssignedAP + ll_AssignedAP + rl_AssignedAP;
                 __instance.headWidget.SetArmor(false, h_AssignedAP, true);
                 __instance.centerTorsoWidget.SetArmor(false, ct_Front, true);
                 __instance.centerTorsoWidget.SetArmor(true, ct_Rear, true);
@@ -237,11 +242,8 @@ namespace BTMaxArmor.Patches
                 __instance.rightArmWidget.SetArmor(false, ra_AssignedAP, true);
                 __instance.leftLegWidget.SetArmor(false, ll_AssignedAP, true);
                 __instance.rightLegWidget.SetArmor(false, rl_AssignedAP, true);
-                logger.Log("availableAP: " + availableArmor);
+/*                logger.Log("availableAP: " + availableArmor);
                 logger.Log("assignedAP: " + assignedPoints);
-                logger.Log("ct_assignedAP: " + ct_AssignedAP);
-                logger.Log("lt_assignedAP: " + lt_AssignedAP);
-                logger.Log("rt_assignedAP: " + rt_AssignedAP);
                 logger.Log("h_assignedAP: " + h_AssignedAP);
                 logger.Log("ct_Front: " + ct_Front);
                 logger.Log("ct_Rear: " + ct_Rear);
@@ -254,12 +256,14 @@ namespace BTMaxArmor.Patches
                 logger.Log("ll_assignedAP: " + ll_AssignedAP);
                 logger.Log("rl_assignedAP: " + rl_AssignedAP);
                 logger.Log("");
-
+*/
                 ___mechInfoWidget.RefreshInfo(false);
+                //Flag as modified in the GUI
                 __instance.FlagAsModified();
                 __instance.ValidateLoadout(false);
             }
-            if(inputChanged == true)
+            //Change the HeadPointsUnChanged variable back to what it was before clicking.
+            if(originalSetting != Mod.Settings.HeadPointsUnChanged)
             {
                 Mod.Settings.HeadPointsUnChanged = !Mod.Settings.HeadPointsUnChanged;
             }

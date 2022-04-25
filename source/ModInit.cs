@@ -1,6 +1,5 @@
 ﻿using Harmony;
 using System;
-using System.Diagnostics;
 using System.Reflection;
 using Newtonsoft.Json;
 
@@ -21,15 +20,14 @@ namespace BTMaxArmor
         {
             ModDir = modDirectory;
 
-            Assembly asm = Assembly.GetExecutingAssembly();
-            FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(asm.Location);
-
             try
             {
                 Settings = JsonConvert.DeserializeObject<ModConfig>(settings);
             }
             catch (Exception e)
             {
+                var logger = HBS.Logging.Logger.GetLogger("Sysinfo");
+                logger.Log(e);
                 Settings = new ModConfig();
             }
 

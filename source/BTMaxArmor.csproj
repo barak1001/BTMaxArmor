@@ -84,7 +84,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ArmorUtils\ArmorUtils.cs" />
-    <Compile Include="AdjustArmor.cs" />
     <Compile Include="ModConfig.cs" />
     <Compile Include="Global.cs" />
     <Compile Include="Misc\Mod.cs" />
@@ -94,17 +93,13 @@
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-<Target Name="CopyDLLs" AfterTargets="Build">
-	<Message Text="Executing CopyDLLs task" Importance="High" />
-
-	<PropertyGroup>
-	  <CopyToDir></CopyToDir>
-	</PropertyGroup>
-
-	<Copy
-	  SourceFiles="$(TargetDir)$(ProjectName).dll"
-	  DestinationFolder="D:\Steam\steamapps\common\BATTLETECH\Mods\$(ProjectName)" />
-
-	<Message Text="Copied build files" Importance="High" />
-</Target>
+  <Target Name="CopyDLLs" AfterTargets="Build">
+    <Message Text="Executing CopyDLLs task" Importance="High" />
+    <PropertyGroup>
+      <CopyToDir>
+      </CopyToDir>
+    </PropertyGroup>
+    <Copy SourceFiles="$(TargetDir)$(ProjectName).dll" DestinationFolder="D:\Steam\steamapps\common\BATTLETECH\Mods\$(ProjectName)" />
+    <Message Text="Copied build files" Importance="High" />
+  </Target>
 </Project>
