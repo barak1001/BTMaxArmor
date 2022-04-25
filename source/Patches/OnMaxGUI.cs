@@ -195,14 +195,12 @@ namespace BTMaxArmor.Patches
                         pass = !pass;
                     }
                 }
-                assignedPoints = h_AssignedAP + ct_AssignedAP + lt_AssignedAP + ra_AssignedAP + la_AssignedAP + ra_AssignedAP + ll_AssignedAP + rl_AssignedAP;
                 float ct_Front = Mathf.Ceil(ct_AssignedAP * Mod.Settings.CenterTorsoRatio);
                 float ct_Rear = ct_AssignedAP - ct_Front;
                 float lt_Front = Mathf.Ceil(lt_AssignedAP * Mod.Settings.LeftTorsoRatio);
                 float lt_Rear = lt_AssignedAP - lt_Front;
                 float rt_Front = Mathf.Ceil(rt_AssignedAP * Mod.Settings.RightTorsoRatio);
                 float rt_Rear = rt_AssignedAP - rt_Front;
-
                 if (ct_Rear == 0)
                 {
                     if (ct_Front > 1)
@@ -227,8 +225,12 @@ namespace BTMaxArmor.Patches
                         rt_Rear++;
                     }
                 }
+                assignedPoints = h_AssignedAP + ct_AssignedAP + lt_AssignedAP + rt_AssignedAP + rt_AssignedAP + ra_AssignedAP + ll_AssignedAP + rl_AssignedAP;
                 logger.Log("availableAP: " + availableArmor);
                 logger.Log("assignedAP: " + assignedPoints);
+                logger.Log("ct_assignedAP: " + ct_AssignedAP);
+                logger.Log("lt_assignedAP: " + lt_AssignedAP);
+                logger.Log("rt_assignedAP: " + rt_AssignedAP);
                 logger.Log("h_assignedAP: " + h_AssignedAP);
                 logger.Log("ct_Front: " + ct_Front);
                 logger.Log("ct_Rear: " + ct_Rear);
